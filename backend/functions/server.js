@@ -84,6 +84,40 @@ app.get('/api/check-session', (req, res) => {
 });
 
 
+app.post('/api/displayMovies', async (req, res) => {
+  const { partyID } = req.body;
+
+  try {
+    // Fetch polls for the given partyID
+    const polls = await Poll.find({ partyID });
+
+    // Collect watched movie IDs from the polls
+    const watchedMovies = polls.flatMap(poll =>
+      poll.movies
+        .filter(movie => movie.watchedStatus) // Only include watched movies
+        .map(movie => movie.movieID)
+    );
+
+    // Collect movie IDs from the polls
+    const movieIDs = polls.flatMap(poll =>
+      poll.movies.map(movie => movie.movieID)
+    );
+
+    // Filter out watched movies
+    const moviesNotWatched = movieIDs.filter(movieID => !watchedMovies.includes(movieID));
+
+    // Fetch movies based on the collected IDs
+    const movies = await Movie.find({ movieID: { $in: moviesNotWatched } }).sort({ votes: -1 }).exec();
+
+    console.log(movies);
+
+    res.status(200).json(movies);
+  } catch (e) {
+    console.error('Server error:', e);
+    res.status(500).json({ error: e.toString() });
+  }
+});
+
 // Display movies
 app.post('/api/displayTopMovie', async (req, res) => {
     const { partyID } = req.body;
