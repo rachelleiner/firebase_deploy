@@ -8,6 +8,7 @@ const ForgotPasswordPage = () => {
   return (
     <div className="change-password-container">
       <h2 className="change-password-header">Forgot Password</h2>
+      <ForgotPassEmail />
     </div>
   );
 };

@@ -75,7 +75,10 @@ const Login = () => {
           className="inputField"
           required
         />
-        <a href="/reset-password" id="resetPassword">Forgot Password?</a>
+        <div>
+          <a href="/reset-password" id="resetPassword">Forgot Password?</a>
+        </div>
+        
         <button type="submit" className="buttons">Submit</button>
       </form>
       <span id="loginResult" className="message">{message}</span>
