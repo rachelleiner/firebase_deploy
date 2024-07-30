@@ -33,6 +33,7 @@ const CreateParty = () => {
       if (response.ok) {
         const result = JSON.parse(responseText);
         setMessage('Party created successfully!');
+        localStorage.setItem('groupName', partyName); 
         setTimeout(() => {
           navigate('/invite');
         }, 3000); 
@@ -49,7 +50,7 @@ const CreateParty = () => {
   return (
     <div className="createParty-container">
       <div id="createGroupDiv">
-        <h1 className="createParty-inner-heading">Create a Group</h1>
+        <h1 className="createParty-inner-heading">Create a Party</h1>
         <form onSubmit={handleCreateParty}>
           <input
             type="text"
@@ -64,6 +65,9 @@ const CreateParty = () => {
         <span className="createParty-message">{message}</span>
         <div>
           <a href="/invite" className="createParty-joinLink">Return to invite</a>
+        </div>
+        <div>
+          <a href="/invitesent" className="createParty-joinLink"> Want to join a Party? </a>
         </div>
       </div>
     </div>
