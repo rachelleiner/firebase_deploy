@@ -232,7 +232,7 @@ app.post('/api/sendResetPassEmail', async (req, res) => {
             subject: 'Password Reset Request',
             text: `Hi! There, You can reset your password 
                    by clicking the link below:
-                   https://us-central1-themoviesocialweb.cloudfunctions.net/app/api/resetPassword/${passToken}/${email}
+                   https://cod-destined-secondly.ngrok-free.app/api/resetPassword/${passToken}/${email}
                    Thanks`,
         });
         res.status(200).json({ message: 'email sent' });
@@ -251,12 +251,12 @@ app.get('/api/resetPassword/:passToken/:email', async (req, res) => {
                         <body>
                             <h2>Reset password failed</h2>
                             <p>The link you clicked is invalid or has expired. </p>
-                            <p><a href="https://us-central1-themoviesocialweb.cloudfunctions.net/app/login">Go to Login Page</a></p>
+                            <p><a href="https://cod-destined-secondly.ngrok-free.app/login">Go to Login Page</a></p>
                         </body>
                     </html>
                 `);
             }
-            const url = new URL("https://us-central1-themoviesocialweb.cloudfunctions.net/app/RESET_PASSWORD_PAGE?email=" + email);
+            const url = new URL("https://cod-destined-secondly.ngrok-free.app/RESET_PASSWORD_PAGE?email=" + email);
             res.status(200).send(`
                 <html>
                     <head>
@@ -369,11 +369,12 @@ app.post('/api/invite', async (req, res) => {
   
   app.post('/api/invitations', async (req, res) => {
     const { userId } = req.body;
-
+  
     console.log("userid", userId);
   
     try {
-      const invitations = await Invite.find({ receiverId: userId, status: 'pending' }).populate('partyId senderObjectId');
+      const invitations = await Invite.find({ invitedId: userId, status: 'pending' }).populate('partyId senderObjectId');
+      console.log("invitations found:", invitations);
       res.status(200).json(invitations);
     } catch (error) {
       console.error('Error fetching invitations:', error);
@@ -423,20 +424,24 @@ app.post('/api/invite', async (req, res) => {
 
     try {
         const userObjectId = new ObjectId(userId);
-        console.log("userid " + userObjectId);
+        console.log("User ID:", userObjectId);
 
+        // Find all parties where the user is a member
         const memberParties = await db.collection('PartyMembers').find({ userID: userObjectId }).toArray();
-        console.log("parties " + memberParties);
+        console.log("Member Parties:", memberParties);
 
-        const partyIds = memberParties.map(member => member.partyID);
-        console.log("party ids " + partyIds);
-
-        if (partyIds.length === 0) {
-            return res.status(400).json({ message: 'No parties found'}); 
+        if (memberParties.length === 0) {
+            console.log('No parties found for user:', userObjectId);
+            return res.status(400).json({ message: 'No parties found' });
         }
 
+        // Extract party IDs
+        const partyIds = memberParties.map(member => member.partyID.toString());
+        console.log("Party IDs:", partyIds);
+
+        // Convert party IDs to ObjectId and find matching parties
         const parties = await db.collection('party').find({ _id: { $in: partyIds.map(id => new ObjectId(id)) } }).toArray();
-        console.log("parties" + parties);
+        console.log("Parties:", parties);
 
         res.status(200).json(parties);
 
@@ -445,6 +450,7 @@ app.post('/api/invite', async (req, res) => {
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

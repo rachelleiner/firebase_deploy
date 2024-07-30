@@ -11,9 +11,9 @@ const url =
 const client = new MongoClient(url);
 
 // Vote Page using query parameter
-// Example: http://localhost:5000/api/poll/votePage?pollID=66980dc3b03ee5fdec99ffde
-router.get('/votePage', async (req, res) => {
-  const { pollID } = req.query;
+// Example: https://cod-destined-secondly.ngrok-free.app/api/poll/votePage?pollID=66980dc3b03ee5fdec99ffde
+router.post('/votePage', async (req, res) => {
+  const { pollID } = req.body;
   console.log(`Fetching vote page for pollID: ${pollID}`);
 
   try {
