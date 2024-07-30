@@ -291,7 +291,7 @@ app.get('/api/resetPassword/:passToken/:email', async (req, res) => {
               `);
           }
 
-          const redirectUrl = `ttps://us-central1-themoviesocialweb.cloudfunctions.net/app/reset-password?email=${encodeURIComponent(email)}`;
+          const redirectUrl = `ttps://us-central1-themoviesocialweb.cloudfunctions.net/app/resetPassword/${passToken}?email=${encodeURIComponent(email)}`;
           res.redirect(redirectUrl);
       });
   } catch (e) {
@@ -306,6 +306,29 @@ app.get('/api/resetPassword/:passToken/:email', async (req, res) => {
       `);
   }
 });
+
+app.post('/api/resetPassword', (req, res) => {
+  const { email, newPassword, token } = req.body;
+
+  // Validate email format (simplified)
+  if (!email || !/^\S+@\S+\.\S+$/.test(email) || !newPassword || !token) {
+    return res.status(400).json({ message: 'Invalid request' });
+  }
+
+  // Validate token
+  if (resetTokens[email] !== token) {
+    return res.status(400).json({ message: 'Invalid or expired token' });
+  }
+
+  // In a real application, update the password in your database
+  console.log(`Password for ${email} updated to ${newPassword}`);
+
+  // Remove token after use
+  delete resetTokens[email];
+
+  res.status(200).json({ message: 'Password reset successfully' });
+});
+
 
 app.post('/api/resetPass', async (req, res) => {
     const { email, newPassword, validatePassword } = req.body;
