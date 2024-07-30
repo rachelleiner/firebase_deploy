@@ -1,0 +1,106 @@
+.invite-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    background-color: #313338; 
+    color: #FFF3E8; 
+    font-family: 'Inter', sans-serif;
+    padding: 20px;
+    position: relative;
+  }
+  
+  .invite-page .tabs {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .invite-page .tab {
+    padding: 10px 20px;
+    margin: 0 10px;
+    background-color: #A51F1F;
+    color: #FFF3E8;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .invite-page .tab.active {
+    background-color: #FFD700;
+    color: #313338;
+  }
+  
+  .invite-page .tab-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+  }
+  
+  .invite-page .inner-heading {
+    color: #FFF3E8; 
+    margin-bottom: 20px;
+  }
+  
+  .invite-page .inputField {
+    width: 100%;
+    max-width: 300px;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: none;
+    font-size: 16px;
+    text-align: center;
+  }
+  
+  .invite-page .buttons {
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #FFF3E8;
+    background-color: #A51F1F;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .invite-page .buttons:hover {
+    background-color: #E0E0E0;
+  }
+  
+  .invite-page .message {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #FFD700;
+  }
+  
+  .invite-page ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .invite-page li {
+    padding: 10px 0;
+    border-bottom: 1px solid #FFF3E8;
+  }
+  
+  .invite-page .navigation-links {
+    margin-top: 20px;
+  }
+  
+  .invite-page .nav-link {
+    display: block;
+    margin: 10px 0;
+    color: #FFF3E8;
+    text-decoration: none;
+    font-size: 16px;
+  }
+  
+  .invite-page .nav-link:hover {
+    color: #FFD700;
+  }
+  
