@@ -9,12 +9,11 @@ import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import ProfilePage from './pages/ProfilePage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
-import Waiting from './pages/WaitingPage';
+import WaitingPage from './pages/WaitingPage';
 import JoinPage from './pages/JoinPage';
 import CreatePartyPage from './pages/CreatePartyPage';
-import PollPage from './pages/PollPage';
 import WatchedPage from './pages/WatchedPage';
-
+import InvitePage from './pages/InvitePage'; 
 import './App.css';
 
 const App = () => {
@@ -28,14 +27,14 @@ const App = () => {
           <Route path="/join" element={<JoinPage />} />
           <Route path="/createParty" element={<CreatePartyPage />} />
           <Route path="/home" element={<HomePage />} />
-          <Route path="/poll" element={<PollPage />} />
           <Route path="/search" element={<SearchPage />} />
           <Route path="/vote" element={<VotePage />} />
           <Route path="/changepassword" element={<ChangePasswordPage />} />
-          <Route path="/wait" element={<Waiting />} />
+          <Route path="/wait" element={<WaitingPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/watched" element={<WatchedPage />} />
-          <Route path="/thank-you" element={<ThankYouPage />} />
+          <Route path="/thankyou" element={<ThankYouPage />} />
+          <Route path="/invite" element={<InvitePage />} /> 
         </Routes>
       </div>
     </Router>
