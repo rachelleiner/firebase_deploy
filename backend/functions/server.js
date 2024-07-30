@@ -275,7 +275,7 @@ app.post('/api/sendResetPassEmail', async (req, res) => {
     }
 });
 
-app.get('/api/resetPassword/:passToken/:email', async (req, res) => {
+app.get('/api/requestResetLink', async (req, res) => {
   const { passToken, email } = req.params;
   try {
       jwt.verify(passToken, 'PassTokenKey', function (err, decoded) {
