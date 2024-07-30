@@ -11,7 +11,7 @@ const CreateParty = () => {
     event.preventDefault();
 
     try {
-      const userId = localStorage.getItem('userId'); // Assuming userId is stored in localStorage after login
+      const userId = localStorage.getItem('userId'); 
 
       if (!userId) {
         setMessage('User ID not found. Please log in.');
@@ -35,7 +35,7 @@ const CreateParty = () => {
         setMessage('Party created successfully!');
         setTimeout(() => {
           navigate('/invite');
-        }, 3000); // Redirect to invite page after 3 seconds
+        }, 3000); 
       } else {
         const errorResult = JSON.parse(responseText);
         setMessage(`Error: ${errorResult.message}`);
