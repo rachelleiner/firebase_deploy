@@ -13,13 +13,14 @@ const client = new MongoClient(url);
 // Vote Page using query parameter
 // Example: https://us-central1-themoviesocialweb.cloudfunctions.net/app/api/poll/votePage?pollID=66980dc3b03ee5fdec99ffde
 router.post('/votePage', async (req, res) => {
-  const { pollID } = req.body;
-  console.log(`Fetching vote page for pollID: ${pollID}`);
+  const { partyID } = req.body;
+  console.log(`Fetching vote page for partyID: ${partyID}`);
 
   try {
-    const pollObjectId = new mongoose.Types.ObjectId(pollID);
 
-    const poll = await Poll.findById(pollObjectId);
+    const partyObject = new mongoose.Types.ObjectId(partyID);
+    const poll = await Poll.findOne({ partyID: partyObject });
+
     if (!poll) {
       console.log('Poll not found');
       return res.status(404).json({ error: 'Poll not found' });
