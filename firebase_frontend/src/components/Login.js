@@ -22,10 +22,33 @@ const Login = () => {
 
       const result = await response.json();
       if (response.ok) {
-        localStorage.setItem('userId', result.userId); // Store user ID
-        navigate('/createParty');
+        if (result.message === 'Email not verified') {
+          const emailToken = localStorage.getItem('verificationToken');
+          if (emailToken) {
+            const verifyResponse = await fetch(`https://us-central1-themoviesocialweb.cloudfunctions.net/app/api/auth/verifyEmail/${emailToken}`);
+            const verifyResult = await verifyResponse.text();
+            if (verifyResponse.ok) {
+              setMessage('Email verified successfully. Please log in again.');
+              localStorage.removeItem('verificationToken'); 
+            } else {
+              setMessage(`Verification failed: ${verifyResult}`);
+            }
+          } else {
+            setMessage('Email not verified. Please check your inbox for the verification email.');
+          }
+        } else {
+          localStorage.setItem('userId', result.userId);
+          setMessage('Login successful');
+          setTimeout(() => {
+            navigate('/createParty');
+          }, 3000); 
+        }
       } else {
-        setMessage(`Error: ${result.message}`);
+        if (result.message === 'Email not verified') {
+          setMessage('Email not verified');
+        } else {
+          setMessage(`Error: ${result.message}`);
+        }
       }
     } catch (error) {
       setMessage(`Error: ${error.toString()}`);
