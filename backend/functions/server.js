@@ -276,48 +276,35 @@ app.post('/api/sendResetPassEmail', async (req, res) => {
 });
 
 app.get('/api/resetPassword/:passToken/:email', async (req, res) => {
-    const { passToken, email } = req.params;
-    try {
-        jwt.verify(passToken, 'PassTokenKey', function (err, decoded) {
-            if (err) {
-                return res.status(401).send(`
-                    <html>
-                        <body>
-                            <h2>Reset password failed</h2>
-                            <p>The link you clicked is invalid or has expired. </p>
-                            <p><a href="https://us-central1-themoviesocialweb.cloudfunctions.net/app/login">Go to Login Page</a></p>
-                        </body>
-                    </html>
-                `);
-            }
-            const url = new URL("https://us-central1-themoviesocialweb.cloudfunctions.net/app/RESET_PASSWORD_PAGE?email=" + email);
-            res.status(200).send(`
-                <html>
-                    <head>
-                        <title>Redirecting to another page</title>
-                        <meta http-equiv="refresh" content="1; url = ${url} " />
-                    </head>
-                    <body>
-                        <h3>Redirecting to another page</h3>
-                        <p><strong>Note:</strong> If your browser supports Refresh, you'll be redirected to the Reset Password Page.</p>
-                        <p>If you are not redirected in 5 seconds, click the link below:
-                            <a href="${url}" target="_blank">click here</a>
-                        </p>
-                    </body>
-                </html>
-            `);
-        });
-    } catch (e) {
-        console.error('Error during reset password:', e);
-        res.status(500).send(`
-            <html>
-                <body>
-                    <h2>Internal Server Error</h2>
-                    <p>There was a problem processing your password reset. Please try again later.</p>
-                </body>
-            </html>
-        `);
-    }
+  const { passToken, email } = req.params;
+  try {
+      jwt.verify(passToken, 'PassTokenKey', function (err, decoded) {
+          if (err) {
+              return res.status(401).send(`
+                  <html>
+                      <body>
+                          <h2>Reset password failed</h2>
+                          <p>The link you clicked is invalid or has expired. </p>
+                          <p><a href="/login">Go to Login Page</a></p>
+                      </body>
+                  </html>
+              `);
+          }
+
+          const redirectUrl = `ttps://us-central1-themoviesocialweb.cloudfunctions.net/app/reset-password?email=${encodeURIComponent(email)}`;
+          res.redirect(redirectUrl);
+      });
+  } catch (e) {
+      console.error('Error during reset password:', e);
+      res.status(500).send(`
+          <html>
+              <body>
+                  <h2>Internal Server Error</h2>
+                  <p>There was a problem processing your password reset. Please try again later.</p>
+              </body>
+          </html>
+      `);
+  }
 });
 
 app.post('/api/resetPass', async (req, res) => {
