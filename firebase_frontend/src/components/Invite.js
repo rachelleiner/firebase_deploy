@@ -2,21 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/InvitePage.css';
 
-const InvitePage = () => {
+const Invite = () => {
   const [activeTab, setActiveTab] = useState('sendInvites');
   const [receiverEmail, setReceiverEmail] = useState('');
   const [message, setMessage] = useState('');
   const [invitations, setInvitations] = useState([]);
   const [fetchMessage, setFetchMessage] = useState('');
-  const [groupName, setGroupName] = useState('');
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const storedGroupName = localStorage.getItem('groupName');
-    if (storedGroupName) {
-      setGroupName(storedGroupName);
-    }
-  }, []);
 
   const handleInvite = async (event) => {
     event.preventDefault();
@@ -97,7 +89,7 @@ const InvitePage = () => {
       </div>
       {activeTab === 'sendInvites' && (
         <div className="tab-content">
-          <h1 className="inner-heading">Invite to {groupName}</h1>
+          <h1 className="inner-heading">Invite to Party</h1>
           <form onSubmit={handleInvite}>
             <input
               type="email"
@@ -111,8 +103,8 @@ const InvitePage = () => {
           </form>
           <span className="message">{message}</span>
           <div className="navigation-links">
-            <a href="/home" className="nav-link">Home</a>
-            <a href="/createParty" className="nav-link">Create Group</a>
+            <a href="/home" className="nav-link">Return Home</a>
+            <a href="/createParty" className="nav-link">Create a Party</a>
           </div>
         </div>
       )}
@@ -127,10 +119,14 @@ const InvitePage = () => {
               </li>
             ))}
           </ul>
+          <div className="navigation-links">
+            <a href="/home" className="nav-link">Return Home</a>
+            <a href="/createParty" className="nav-link">Create a Party</a>
+          </div>
         </div>
       )}
     </div>
   );
 };
 
-export default InvitePage;
+export default Invite;
