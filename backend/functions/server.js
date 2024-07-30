@@ -232,7 +232,7 @@ app.post('/api/sendResetPassEmail', async (req, res) => {
             subject: 'Password Reset Request',
             text: `Hi! There, You can reset your password 
                    by clicking the link below:
-                   https://cod-destined-secondly.ngrok-free.app/api/resetPassword/${passToken}/${email}
+                   https://us-central1-themoviesocialweb.cloudfunctions.net/app/api/resetPassword/${passToken}/${email}
                    Thanks`,
         });
         res.status(200).json({ message: 'email sent' });
@@ -251,12 +251,12 @@ app.get('/api/resetPassword/:passToken/:email', async (req, res) => {
                         <body>
                             <h2>Reset password failed</h2>
                             <p>The link you clicked is invalid or has expired. </p>
-                            <p><a href="https://cod-destined-secondly.ngrok-free.app/login">Go to Login Page</a></p>
+                            <p><a href="https://us-central1-themoviesocialweb.cloudfunctions.net/app/login">Go to Login Page</a></p>
                         </body>
                     </html>
                 `);
             }
-            const url = new URL("https://cod-destined-secondly.ngrok-free.app/RESET_PASSWORD_PAGE?email=" + email);
+            const url = new URL("https://us-central1-themoviesocialweb.cloudfunctions.net/app/RESET_PASSWORD_PAGE?email=" + email);
             res.status(200).send(`
                 <html>
                     <head>
