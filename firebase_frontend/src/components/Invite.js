@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import '../styles/InvitePage.css';
 
 const Invite = () => {
@@ -6,6 +7,7 @@ const Invite = () => {
   const [invitations, setInvitations] = useState([]);
   const [parties, setParties] = useState([]);
   const [fetchMessage, setFetchMessage] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     console.log('Component mounted');
@@ -135,6 +137,11 @@ const Invite = () => {
     setActiveTab(tab);
   };
 
+  const navigateToParty = (partyID) => {
+    localStorage.setItem('partyID', partyID);
+    navigate('/home');
+  };
+
   return (
     <div className="invite-page-container">
       <h1 className="invite-header">Invitations and Parties</h1>
@@ -154,7 +161,7 @@ const Invite = () => {
               invitations.map((invitation) => (
                 <div key={invitation._id} className="invite-box">
                   <div className="invite-details">
-                    <p><strong>From:</strong> {invitation.senderId ? invitation.senderId.email : 'Unknown Email'}</p>
+                    <p><strong>From:</strong> {invitation.senderObjectId ? invitation.senderObjectId.email : 'Unknown Email'}</p>
                     <p><strong>Status:</strong> {invitation.status}</p>
                   </div>
                   {invitation.status === 'pending' && (
@@ -170,7 +177,8 @@ const Invite = () => {
             )}
           </div>
           <div className="navigation-links">
-            <a href="/createParty" className="nav-link">Create a Party</a>
+            <Link to="/createParty" className="nav-link">Create a Party</Link>
+            <Link to="/home" className="nav-link">Return Home</Link>
           </div>
         </div>
       )}
@@ -181,14 +189,14 @@ const Invite = () => {
             {parties.length > 0 ? (
               parties.map((party) => (
                 <div key={party._id} className="party-box">
-                  {party.name ? party.name : 'Unknown Party Name'}
+                  {party.partyName ? party.partyName : 'Unknown Party Name'}
+                  <span>  </span>
+                  <button onClick={() => navigateToParty(party._id)}>Home</button>
                 </div>
               ))
             ) : (
               !fetchMessage && <p>No parties found.</p>
             )}
-          </div>
-          <div className="navigation-links">
           </div>
         </div>
       )}

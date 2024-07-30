@@ -1,88 +1,79 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
+import '../styles/InvitePage.css';
 
-const ReceivedInvites = () => {
-  const [invitations, setInvitations] = useState([]);
-  const [errorMessage, setErrorMessage] = useState('');
-  const userId = localStorage.getItem('userId'); // Assuming userId is stored in localStorage after login
+const InviteSent = () => {
+  const [receiverEmail, setReceiverEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [invitedEmails, setInvitedEmails] = useState([]);
 
-  useEffect(() => {
-    const fetchInvitations = async () => {
-      try {
-        const response = await fetch('https://us-central1-themoviesocialweb.cloudfunctions.net/app/api/invitations', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ userId }),
-        });
+  const handleInvite = async (event) => {
+    event.preventDefault();
 
-        const responseText = await response.text();
-        if (!response.ok) {
-          throw new Error(responseText || 'Failed to fetch invitations');
-        }
-
-        const data = JSON.parse(responseText);
-        setInvitations(data.invitations || []);
-      } catch (error) {
-        setErrorMessage('Failed to fetch invitations. Please try again later.');
-        console.error('Error fetching invitations:', error);
-      }
-    };
-
-    fetchInvitations();
-  }, [userId]);
-
-  const handleRespond = async (invitationId, status) => {
     try {
-      const response = await fetch('https://us-central1-themoviesocialweb.cloudfunctions.net/app/api/invitations/respond', {
+      const senderId = localStorage.getItem('userId');
+
+      if (!senderId) {
+        setMessage('User ID not found. Please log in.');
+        return;
+      }
+
+      const response = await fetch('https://us-central1-themoviesocialweb.cloudfunctions.net/app/api/invite', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ invitationId, status }),
+        body: JSON.stringify({ senderId, receiverId: receiverEmail }),
       });
 
-      const responseText = await response.text();
-      if (!response.ok) {
-        throw new Error(responseText || 'Failed to respond to invitation');
+      const result = await response.json();
+      if (response.ok) {
+        setMessage('Invitation sent successfully!');
+        setInvitedEmails([...invitedEmails, receiverEmail]);
+        setReceiverEmail('');
+      } else {
+        setMessage(`Error: ${result.error}`);
       }
-
-      setInvitations(invitations.filter(invite => invite._id !== invitationId));
     } catch (error) {
-      setErrorMessage('Failed to respond to invitation. Please try again later.');
-      console.error('Error responding to invitation:', error);
+      console.error('Error:', error);
+      setMessage(`Error: ${error.toString()}`);
     }
   };
 
   return (
-    <div className="invite-page-container">
-      <h1 className="invite-header">Received Invites</h1>
-      {errorMessage && <div className="error-message">{errorMessage}</div>}
-      <div className="invitations-list">
-        {invitations.length > 0 ? (
-          invitations.map((invite, index) => (
-            <div key={index} className="invite-box">
-              <div className="invite-details">
-                <p><strong>From:</strong> {invite.senderName}</p>
-                <p><strong>Group Name:</strong> {invite.groupName}</p>
-                <p><strong>Status:</strong> {invite.status}</p>
-              </div>
-              <div className="invite-actions">
-                {invite.status === 'pending' && (
-                  <>
-                    <button className="accept-button" onClick={() => handleRespond(invite._id, 'accepted')}>Accept</button>
-                    <button className="decline-button" onClick={() => handleRespond(invite._id, 'declined')}>Decline</button>
-                  </>
-                )}
-              </div>
-            </div>
-          ))
-        ) : (
-          <p>No invitations found.</p>
-        )}
+    <div className="invite-page">
+      <div className="tab-content">
+        <h1 className="inner-heading">Invite to Party</h1>
+        <form onSubmit={handleInvite}>
+          <input
+            type="email"
+            value={receiverEmail}
+            onChange={(e) => setReceiverEmail(e.target.value)}
+            placeholder="Enter email to invite"
+            className="inputField"
+            required
+          />
+          <button type="submit" className="buttons">Send Invite</button>
+        </form>
+        <span className="message">{message}</span>
+        <div className="invited-list">
+          <h2 className="inner-heading">Invited Emails</h2>
+          {invitedEmails.length > 0 ? (
+            <ul>
+              {invitedEmails.map((email, index) => (
+                <li key={index}>{email}</li>
+              ))}
+            </ul>
+          ) : (
+            <p>No invitations sent yet.</p>
+          )}
+        </div>
+        <div className="navigation-links">
+          <Link to="/home" className="nav-link">Return Home</Link>
+        </div>
       </div>
     </div>
   );
 };
 
-export default ReceivedInvites;
+export default InviteSent;

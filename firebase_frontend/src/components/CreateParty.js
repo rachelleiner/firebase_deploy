@@ -33,17 +33,19 @@ const CreateParty = () => {
       if (response.ok) {
         const result = JSON.parse(responseText);
         setMessage('Party created successfully!');
-        localStorage.setItem('groupName', partyName); 
+        localStorage.setItem('partyID', result.party._id); 
+        localStorage.setItem('pollID', result.poll._id); 
+        localStorage.setItem('partyName', partyName); 
         setTimeout(() => {
-          navigate('/invite');
+          navigate('/invitesent');
         }, 3000); 
       } else {
         const errorResult = JSON.parse(responseText);
-        setMessage(`Error: ${errorResult.message}`);
+        setMessage('Error:', errorResult.message);
       }
     } catch (error) {
       console.error('Error:', error);
-      setMessage(`Error: ${error.toString()}`);
+      setMessage('Error:', error.toString());
     }
   };
 
@@ -65,9 +67,6 @@ const CreateParty = () => {
         <span className="createParty-message">{message}</span>
         <div>
           <a href="/invite" className="createParty-joinLink">Return to invite</a>
-        </div>
-        <div>
-          <a href="/invitesent" className="createParty-joinLink"> Want to join a Party? </a>
         </div>
       </div>
     </div>
