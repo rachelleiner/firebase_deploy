@@ -215,6 +215,26 @@ app.post('/api/userAccount', async (req, res) => {
     }
 });
 
+app.post('/api/getUserIdByEmail', async (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
+  }
+
+  try {
+    const user = await User.findOne({ email: email });
+    if (user) {
+      res.status(200).json({ userId: user._id });
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error fetching user ID:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.post('/api/changePassword', async (req, res) => {
     const { userID, newPassword, validatePassword } = req.body;
     const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])(?=.*[A-Z])[a-zA-Z0-9!@#$%^&*]{8,32}$/;
