@@ -62,3 +62,7 @@
   font-size: 1.2em; 
   text-align: center;
 }
+
+.waiting-message {
+  color: #fff3e8;
+}

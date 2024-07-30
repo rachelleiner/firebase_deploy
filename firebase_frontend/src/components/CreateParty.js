@@ -66,7 +66,7 @@ const CreateParty = () => {
         </form>
         <span className="createParty-message">{message}</span>
         <div>
-          <a href="/invite" className="createParty-joinLink">Return to invite</a>
+          <a href="/invite" className="createParty-joinLink">Invites</a>
         </div>
       </div>
     </div>
