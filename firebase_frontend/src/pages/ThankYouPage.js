@@ -1,10 +1,11 @@
 import React from 'react';
-import ThankYouMessage from '../components/Thankyou'; 
+import ThankYou from '../components/Thankyou'; 
+import '../styles/ThankYouPage.css';
 
 const ThankYouPage = () => {
   return (
-    <div>
-      <ThankYouMessage />
+    <div className="container">
+      <ThankYou />
     </div>
   );
 };
