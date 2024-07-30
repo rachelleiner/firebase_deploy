@@ -1,4 +1,5 @@
 import React from 'react';
+import '../styles/WaitingPage.css'; 
 
 const WaitingMessage = ({ onRedirect }) => {
   return (
