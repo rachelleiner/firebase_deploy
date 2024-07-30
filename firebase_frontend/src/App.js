@@ -15,6 +15,7 @@ import CreatePartyPage from './pages/CreatePartyPage';
 import WatchedPage from './pages/WatchedPage';
 import InvitePage from './pages/InvitePage'; 
 import InviteSentPage from './pages/InviteSentPage'
+import ForgotPasswordPage from './pages/ForgotPassEmailPage';
 import './App.css';
 
 const App = () => {
@@ -37,6 +38,7 @@ const App = () => {
           <Route path="/thankyou" element={<ThankYouPage />} />
           <Route path="/invite" element={<InvitePage />} /> 
           <Route path="/invitesent" element={<InviteSentPage />} /> 
+          <Route path="/reset-password/" element={<ForgotPasswordPage />} />
         </Routes>
       </div>
     </Router>
