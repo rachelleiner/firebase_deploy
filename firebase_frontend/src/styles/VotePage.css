@@ -88,4 +88,24 @@
   #homeLink:hover {
     text-decoration: underline;
   }
+  .vote-button, .watch-button {
+    background-color: #4CAF50; 
+    border: none; 
+    color: white; 
+    padding: 10px 24px; 
+    text-align: center; 
+    text-decoration: none;
+    display: inline-block; 
+    margin: 4px 2px; 
+    cursor: pointer; 
+    border-radius: 16px; 
+    font-size: 16px; 
+  }
   
+  .vote-button:hover, .watch-button:hover {
+    background-color: #45a049; 
+  }
+  
+  .vote-button i, .watch-button i {
+    margin-right: 8px; 
+  }

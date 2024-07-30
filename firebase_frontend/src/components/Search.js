@@ -40,7 +40,6 @@ const Search = () => {
         console.log('Poll ID saved in local storage:', result.pollID);
       } catch (error) {
         console.error('Error starting poll:', error);
-        setErrorMessage('Failed to start poll. Please try again later.');
       }
     };
 
@@ -78,7 +77,6 @@ const Search = () => {
         const data = await response.json();
         console.log('Search results:', data);
 
-        // Transform the array of titles into an array of objects with title properties
         const moviesWithTitles = data.map(title => ({ title }));
 
         setAllMovies(moviesWithTitles);
@@ -99,7 +97,7 @@ const Search = () => {
   const handleInputChange = (e) => {
     setSearchTerm(e.target.value);
     setErrorMessage('');
-    setSearchInitiated(false); // Reset search initiated state on input change
+    setSearchInitiated(false);
   };
 
   const handleAddToPoll = async (movieTitle) => {
@@ -110,12 +108,12 @@ const Search = () => {
     console.log('Using pollID:', pollID);
 
     try {
-      const response = await fetch('https://us-central1-themoviesocialweb.cloudfunctions.net/app/api/poll/startPoll', {
+      const response = await fetch('https://us-central1-themoviesocialweb.cloudfunctions.net/app/api/poll/addMovieToPoll', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ partyID, movieID: movieTitle }), // Note: movieID should ideally be the movie's unique identifier, not the title
+        body: JSON.stringify({ partyID, pollID, movieTitle }), // Use proper identifiers for movieID
       });
 
       if (!response.ok) {
@@ -125,23 +123,11 @@ const Search = () => {
       }
 
       const result = await response.json();
-      console.log('Poll start result:', result);
+      console.log('Poll update result:', result);
 
-      if (response.ok) {
-        console.log('Poll updated successfully, pollID:', result.pollID);
-        localStorage.setItem('pollID', result.pollID);
-
-        const updatedPollID = localStorage.getItem('pollID');
-        console.log('Poll ID set in local storage:', updatedPollID);
-
-        navigate('/vote', { state: { pollID: result.pollID, selectedMovies: [result.movieID] } });
-      } else {
-        console.error('Error updating poll:', result.message);
-        setErrorMessage(`Error: ${result.message}`);
-      }
+      navigate('/vote', { state: { pollID: result.pollID, selectedMovies: [result.movieTitle] } });
     } catch (error) {
       console.error('Update poll error:', error);
-      setErrorMessage('Failed to update poll. Please try again later.');
     }
   };
 

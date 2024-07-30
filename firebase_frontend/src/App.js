@@ -14,6 +14,7 @@ import JoinPage from './pages/JoinPage';
 import CreatePartyPage from './pages/CreatePartyPage';
 import WatchedPage from './pages/WatchedPage';
 import InvitePage from './pages/InvitePage'; 
+import InviteSentPage from './pages/InviteSentPage'
 import './App.css';
 
 const App = () => {
@@ -35,6 +36,7 @@ const App = () => {
           <Route path="/watched" element={<WatchedPage />} />
           <Route path="/thankyou" element={<ThankYouPage />} />
           <Route path="/invite" element={<InvitePage />} /> 
+          <Route path="/invitesent" element={<InviteSentPage />} /> 
         </Routes>
       </div>
     </Router>

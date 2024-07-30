@@ -1,0 +1,57 @@
+.invite-page-container {
+    background-color: #313338;
+    color: #FFF3E8;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .invite-header {
+    font-size: 2em;
+    margin-bottom: 20px;
+  }
+  
+  .error-message {
+    color: red;
+    margin-bottom: 20px;
+  }
+  
+  .invitations-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .invite-box {
+    background-color: #FFF3E8;
+    color: #313338;
+    padding: 20px;
+    margin: 10px;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 600px;
+  }
+  
+  .invite-details p {
+    margin: 5px 0;
+  }
+  
+  .invite-actions {
+    margin-top: 10px;
+  }
+  
+  .accept-button, .decline-button {
+    background-color: #313338;
+    color: #FFF3E8;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  
+  .accept-button:hover, .decline-button:hover {
+    background-color: #FFF3E8;
+    color: #313338;
+    border: 1px solid #313338;
+  }
+  
