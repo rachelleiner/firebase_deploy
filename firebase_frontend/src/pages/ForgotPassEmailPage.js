@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import ChangePassword from '../components/ForgotPassEmail';
+import ForgotPassEmail from '../components/ForgotPassEmail';
 import '../styles/ChangePassword.css';
 
 const ForgotPasswordPage = () => {
