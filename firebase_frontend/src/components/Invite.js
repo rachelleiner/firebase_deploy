@@ -137,8 +137,9 @@ const Invite = () => {
     setActiveTab(tab);
   };
 
-  const navigateToParty = (partyID) => {
+  const navigateToParty = (partyID, partyName) => {
     localStorage.setItem('partyID', partyID);
+    localStorage.setItem('partyName', partyName); 
     navigate('/home');
   };
 
@@ -191,7 +192,7 @@ const Invite = () => {
                 <div key={party._id} className="party-box">
                   {party.partyName ? party.partyName : 'Unknown Party Name'}
                   <span>  </span>
-                  <button onClick={() => navigateToParty(party._id)}>Home</button>
+                  <button onClick={() => navigateToParty(party._id, party.partyName)}>Home</button>
                 </div>
               ))
             ) : (

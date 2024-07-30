@@ -4,6 +4,7 @@ import '../styles/HomePage.css';
 const HomePage = ({ partyID }) => {
   const [error, setError] = useState(null);
   const [topVotedMovie, setTopVotedMovie] = useState(null);
+  const [partyName, setPartyName] = useState('Party');
 
   useEffect(() => {
     const fetchTopVotedMovie = async () => {
@@ -43,6 +44,10 @@ const HomePage = ({ partyID }) => {
 
   useEffect(() => {
     console.log('Current top voted movie:', topVotedMovie);
+    const storedPartyName = localStorage.getItem('partyName');
+    if (storedPartyName) {
+      setPartyName(storedPartyName);
+    }
   }, [topVotedMovie]);
 
   return (
@@ -51,6 +56,7 @@ const HomePage = ({ partyID }) => {
       <div className="content">
         <div className="group-members">
           <h2>Party Name</h2>
+          <div className="movie-title">{partyName}</div>
           {error && (
             <div className="error-message">
               <p>{error}</p>
