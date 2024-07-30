@@ -1,80 +1,70 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/CreatePartyPage.css';
 
 const CreateParty = () => {
-  const [groupName, setGroupName] = useState('');
+  const [partyName, setPartyName] = useState('');
   const [message, setMessage] = useState('');
-  const [userId, setUserId] = useState('');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const storedUserId = localStorage.getItem('userId');
-    if (storedUserId) {
-      setUserId(storedUserId);
-      console.log('User ID from localStorage:', storedUserId);
-    } else {
-      console.log('User ID not found in localStorage');
-      setMessage('Please log in again.');
-    }
-  }, []);
-
-  const handleCreateGroup = async (groupName) => {
-    console.log('Creating group with name:', groupName);
-    console.log('Using user ID:', userId);
+  const handleCreateParty = async (event) => {
+    event.preventDefault();
 
     try {
-      const response = await fetch('https://us-central1-themoviesocialweb.cloudfunctions.net/app/api/party/createWeb', {
+      const userId = localStorage.getItem('userId'); // Assuming userId is stored in localStorage after login
+
+      if (!userId) {
+        setMessage('User ID not found. Please log in.');
+        return;
+      }
+
+      const response = await fetch('https://us-central1-themoviesocialweb.cloudfunctions.net/app/api/party/create', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ partyName: groupName, userID: userId }),
-        credentials: 'include', // Ensure cookies are included in the request
+        body: JSON.stringify({ partyName, userId }),
       });
 
       console.log('Response status:', response.status);
-
-      const result = await response.json();
-      console.log('Response JSON:', result);
+      const responseText = await response.text();
+      console.log('Response text:', responseText);
 
       if (response.ok) {
-        console.log('Group created successfully');
-        setMessage('Group created successfully!');
-        localStorage.setItem('partyID', result.partyInviteCode);
+        const result = JSON.parse(responseText);
+        setMessage('Party created successfully!');
+        setTimeout(() => {
+          navigate('/invite');
+        }, 3000); // Redirect to invite page after 3 seconds
       } else {
-        console.error('Error message:', result.message);
-        setMessage(`Error: ${result.message}`);
+        const errorResult = JSON.parse(responseText);
+        setMessage(`Error: ${errorResult.message}`);
       }
     } catch (error) {
-      console.error('Error during group creation:', error);
+      console.error('Error:', error);
       setMessage(`Error: ${error.toString()}`);
     }
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    console.log('Form submitted with group name:', groupName);
-    handleCreateGroup(groupName);
-  };
-
   return (
-    <div id="createGroupDiv">
-      <h1 className="inner-heading">Create a Party</h1>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={groupName}
-          onChange={(e) => setGroupName(e.target.value)}
-          placeholder="Group Name"
-          className="inputField"
-          required
-        />
-        <button type="submit" className="buttons">Submit</button>
-      </form>
-      <span id="registerResult" className="message">{message}</span>
-      <div>
-        <a href="/join" id="joinLink">Have a code? Enter it!</a>
+    <div className="createParty-container">
+      <div id="createGroupDiv">
+        <h1 className="createParty-inner-heading">Create a Group</h1>
+        <form onSubmit={handleCreateParty}>
+          <input
+            type="text"
+            value={partyName}
+            onChange={(e) => setPartyName(e.target.value)}
+            placeholder="Group Name"
+            className="createParty-inputField"
+            required
+          />
+          <button type="submit" className="createParty-buttons">Create</button>
+        </form>
+        <span className="createParty-message">{message}</span>
+        <div>
+          <a href="/invite" className="createParty-joinLink">Return to invite</a>
+        </div>
       </div>
     </div>
   );
