@@ -6,39 +6,60 @@ const Search = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [allMovies, setAllMovies] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
-  const [showingAllMovies, setShowingAllMovies] = useState(true);
+  const [searchInitiated, setSearchInitiated] = useState(false);
+  const [searching, setSearching] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchMovies = async () => {
+    const startPoll = async () => {
       try {
-        const response = await fetch('https://us-central1-themoviesocialweb.cloudfunctions.net/app/api/displayMovies', {
+        const partyID = localStorage.getItem('partyID');
+        if (!partyID) {
+          throw new Error('Party ID not found in local storage');
+        }
+
+        console.log('Starting poll with partyID:', partyID);
+
+        const response = await fetch('https://us-central1-themoviesocialweb.cloudfunctions.net/app/api/poll/startPoll', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ search: '' }),
+          body: JSON.stringify({ partyID, movieID: null }),
         });
+
         if (!response.ok) {
-          throw new Error('Failed to fetch movies');
+          const errorText = await response.text();
+          console.error('Failed to start poll response text:', errorText);
+          throw new Error('Failed to start poll');
         }
-        const data = await response.json();
-        setAllMovies(data);
-        setErrorMessage('');
+
+        const result = await response.json();
+        console.log('Poll started successfully:', result);
+        localStorage.setItem('pollID', result.pollID);
+        console.log('Poll ID saved in local storage:', result.pollID);
       } catch (error) {
-        console.error('Fetch movies error:', error);
-        setErrorMessage('Failed to fetch movies. Please try again later.');
-        setAllMovies([]);
+        console.error('Error starting poll:', error);
+        setErrorMessage('Failed to start poll. Please try again later.');
       }
     };
 
-    fetchMovies();
+    startPoll();
   }, []);
 
-  const handleSearch = async () => {
-    if (searchTerm === '') {
-      setShowingAllMovies(true);
-    } else {
+  useEffect(() => {
+    const handleSearch = async () => {
+      if (searchTerm === '') {
+        console.log('Search term is empty, not displaying results.');
+        setAllMovies([]);
+        setErrorMessage('');
+        setSearchInitiated(false);
+        return;
+      }
+
+      setSearchInitiated(true);
+      setSearching(true);
+
       try {
         const response = await fetch('https://us-central1-themoviesocialweb.cloudfunctions.net/app/api/searchMovie', {
           method: 'POST',
@@ -49,37 +70,88 @@ const Search = () => {
         });
 
         if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Search request failed response text:', errorText);
           throw new Error('Search request failed');
         }
 
         const data = await response.json();
-        setAllMovies(data);
-        setShowingAllMovies(false);
+        console.log('Search results:', data);
+
+        // Transform the array of titles into an array of objects with title properties
+        const moviesWithTitles = data.map(title => ({ title }));
+
+        setAllMovies(moviesWithTitles);
         setErrorMessage('');
       } catch (error) {
         console.error('Search error:', error);
         setErrorMessage('Search failed. Please try again later.');
         setAllMovies([]);
-        setShowingAllMovies(true);
+      } finally {
+        setSearching(false);
       }
-    }
+    };
+
+    const debounceTimeout = setTimeout(handleSearch, 300);
+    return () => clearTimeout(debounceTimeout);
+  }, [searchTerm]);
+
+  const handleInputChange = (e) => {
+    setSearchTerm(e.target.value);
+    setErrorMessage('');
+    setSearchInitiated(false); // Reset search initiated state on input change
   };
 
-  const handleAddToPoll = (movieId) => {
-    console.log('Adding movie to poll:', movieId);
-    const selectedMovie = allMovies.find(movie => movie._id === movieId);
-    if (selectedMovie) {
-      navigate('/vote', { state: { selectedMovies: [selectedMovie] } });
-    } else {
-      setErrorMessage('Movie not found.');
+  const handleAddToPoll = async (movieTitle) => {
+    console.log('Adding movie to poll:', movieTitle);
+    const partyID = localStorage.getItem('partyID');
+    const pollID = localStorage.getItem('pollID');
+    console.log('Using partyID:', partyID);
+    console.log('Using pollID:', pollID);
+
+    try {
+      const response = await fetch('https://us-central1-themoviesocialweb.cloudfunctions.net/app/api/poll/startPoll', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ partyID, movieID: movieTitle }), // Note: movieID should ideally be the movie's unique identifier, not the title
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Failed to add movie to poll response text:', errorText);
+        throw new Error('Failed to add movie to poll');
+      }
+
+      const result = await response.json();
+      console.log('Poll start result:', result);
+
+      if (response.ok) {
+        console.log('Poll updated successfully, pollID:', result.pollID);
+        localStorage.setItem('pollID', result.pollID);
+
+        const updatedPollID = localStorage.getItem('pollID');
+        console.log('Poll ID set in local storage:', updatedPollID);
+
+        navigate('/vote', { state: { pollID: result.pollID, selectedMovies: [result.movieID] } });
+      } else {
+        console.error('Error updating poll:', result.message);
+        setErrorMessage(`Error: ${result.message}`);
+      }
+    } catch (error) {
+      console.error('Update poll error:', error);
+      setErrorMessage('Failed to update poll. Please try again later.');
     }
   };
 
   const filteredMovies = searchTerm
     ? allMovies.filter((movie) =>
-        movie.title.toLowerCase().startsWith(searchTerm.toLowerCase())
+        movie.title && movie.title.toLowerCase().startsWith(searchTerm.toLowerCase())
       )
-    : allMovies;
+    : [];
+
+  console.log('Rendering search page with movies:', filteredMovies);
 
   return (
     <div className="search-page-container">
@@ -89,31 +161,33 @@ const Search = () => {
           type="text"
           placeholder="Search movies..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={handleInputChange}
+          className="search-input"
         />
-        <button onClick={handleSearch}>Search</button>
       </div>
       {errorMessage && <div className="error-message">{errorMessage}</div>}
-      <div className="movie-list">
-        <h2>{showingAllMovies ? 'All Movies' : 'Search Results'}</h2>
-        <div className="movie-grid">
-          {filteredMovies.length === 0 ? (
+      {searchInitiated && (
+        <div className="movie-list">
+          <h2>Search Results</h2>
+          {filteredMovies.length === 0 && !searching ? (
             <div className="no-results">No movies available.</div>
           ) : (
-            filteredMovies.map((movie, index) => (
-              <div key={index} className="movie-box">
-                <div className="movie-title">{movie.title}</div>
-                <button
-                  className="add-button"
-                  onClick={() => handleAddToPoll(movie._id)}
-                >
-                  Add To Poll
-                </button>
-              </div>
-            ))
+            <div className="movie-grid">
+              {filteredMovies.map((movie, index) => (
+                <div key={index} className="movie-box">
+                  <div className="movie-title">{movie.title}</div>
+                  <button
+                    className="add-button"
+                    onClick={() => handleAddToPoll(movie.title)}
+                  >
+                    Add To Poll
+                  </button>
+                </div>
+              ))}
+            </div>
           )}
         </div>
-      </div>
+      )}
     </div>
   );
 };
